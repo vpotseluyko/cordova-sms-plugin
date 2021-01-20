@@ -26,6 +26,8 @@ public class Sms extends CordovaPlugin {
 
 	public final String ACTION_HAS_PERMISSION = "has_permission";
 
+	public final String ACTION_GET_DELIVERY_MAP = "get_delivery_map";
+
 	public final String ACTION_REQUEST_PERMISSION = "request_permission";
 
 	private static final String INTENT_FILTER_SMS_SENT = "SMS_SENT";
@@ -66,6 +68,8 @@ public class Sms extends CordovaPlugin {
 		else if (action.equals(ACTION_REQUEST_PERMISSION)) {
 			requestPermission(REQUEST_PERMISSION_REQ_CODE);
 			return true;
+		} else if (action.equals(ACTION_GET_DELIVERY_MAP)) {
+			getDeliveryMap();
 		}
 		return false;
 	}
@@ -164,7 +168,7 @@ public class Sms extends CordovaPlugin {
 	String intentFilterAction = INTENT_FILTER_SMS_SENT + java.util.UUID.randomUUID().toString();
 	String intentFilterActionDELIVERY = INTENT_FILTER_SMS_DELIVERED + java.util.UUID.randomUUID().toString();
 
-	private void getDeliveryMap(final CallbackContext callbackContext) {
+	private void getDeliveryMap() {
 		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
 	}
 
