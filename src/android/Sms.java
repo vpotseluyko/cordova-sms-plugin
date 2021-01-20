@@ -17,6 +17,7 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONException;
 
 public class Sms extends CordovaPlugin {
@@ -24,10 +25,11 @@ public class Sms extends CordovaPlugin {
 	public final String ACTION_SEND_SMS = "send";
 
 	public final String ACTION_HAS_PERMISSION = "has_permission";
-	
+
 	public final String ACTION_REQUEST_PERMISSION = "request_permission";
 
 	private static final String INTENT_FILTER_SMS_SENT = "SMS_SENT";
+	private static final String INTENT_FILTER_SMS_DELIVERED = "SMS_DELIVERED";
 
 	private static final int SEND_SMS_REQ_CODE = 0;
 
@@ -35,6 +37,8 @@ public class Sms extends CordovaPlugin {
 
 	private CallbackContext callbackContext;
 
+
+	private JSONObject deliveryMap;
 	private JSONArray args;
 
 	@Override
@@ -155,10 +159,14 @@ public class Sms extends CordovaPlugin {
 		}
 		this.cordova.getActivity().startActivity(sendIntent);
 	}
-	
+
 	// randomize the intent filter action to avoid using the same receiver
 	String intentFilterAction = INTENT_FILTER_SMS_SENT + java.util.UUID.randomUUID().toString();
+	String intentFilterActionDELIVERY = INTENT_FILTER_SMS_DELIVERED + java.util.UUID.randomUUID().toString();
 
+	private void getDeliveryMap(final CallbackContext callbackContext) {
+		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
+	}
 
 	private void send(final CallbackContext callbackContext, String phoneNumber, String message) {
 		SmsManager manager = SmsManager.getDefault();
@@ -196,9 +204,30 @@ public class Sms extends CordovaPlugin {
 			}
 		};
 
-		this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(intentFilterAction));
+		final BroadcastReceiver deliveryReceiver = new BroadcastReceiver() {
 
+			boolean anyError = false; //use to detect if one of the parts failed
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				switch (getResultCode()) {
+				case Activity.RESULT_OK:
+					deliveryMap.put(intentFilterAction, "ok")
+					break;
+				case Activity.RESULT_CANCEL:
+					deliveryMap.put(intentFilterAction, "fail");
+					break;
+				}
+			}
+
+		};
+
+		this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(intentFilterAction));
 		PendingIntent sentIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterAction), 0);
+
+		this.cordova.getActivity().registerReceiver(deliveryReceiver, new IntentFilter(intentFilterActionDELIVERY));
+		PendingIntent deliveryIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterActionDELIVERY), 0);
+
 
 		// depending on the number of parts we send a text message or multi parts
 		if (parts.size() > 1) {
@@ -209,7 +238,7 @@ public class Sms extends CordovaPlugin {
 			manager.sendMultipartTextMessage(phoneNumber, null, parts, sentIntents, null);
 		}
 		else {
-			manager.sendTextMessage(phoneNumber, null, message, sentIntent, null);
+			manager.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);
 		}
 	}
 }
