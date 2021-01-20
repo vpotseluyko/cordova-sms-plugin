@@ -17,7 +17,7 @@ function convertPhoneToArray(phone) {
 sms.getDeliveryMap = function (success, failure) {
     exec(
         success, failure,
-        'Sms', 'getDeliveryMap',
+        'Sms', 'get_delivery_map',
     )
 }
 
