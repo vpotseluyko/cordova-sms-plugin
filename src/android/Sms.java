@@ -69,7 +69,7 @@ public class Sms extends CordovaPlugin {
 			requestPermission(REQUEST_PERMISSION_REQ_CODE);
 			return true;
 		} else if (action.equals(ACTION_GET_DELIVERY_MAP)) {
-			getDeliveryMap();
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
 			return true;
 		}
 		return false;
@@ -168,10 +168,6 @@ public class Sms extends CordovaPlugin {
 	// randomize the intent filter action to avoid using the same receiver
 	String intentFilterAction = INTENT_FILTER_SMS_SENT + java.util.UUID.randomUUID().toString();
 	String intentFilterActionDELIVERY = INTENT_FILTER_SMS_DELIVERED + java.util.UUID.randomUUID().toString();
-
-	private void getDeliveryMap() {
-		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
-	}
 
 	private void send(final CallbackContext callbackContext, String phoneNumber, String message) {
 		SmsManager manager = SmsManager.getDefault();
