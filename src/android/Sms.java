@@ -13,7 +13,7 @@ import android.os.Build;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -41,7 +41,7 @@ public class Sms extends CordovaPlugin {
 	private CallbackContext callbackContext;
 
 
-	private Map<String, String> deliveryMap = new Map();
+	private HashMap<String, String> deliveryMap = new HashMap();
 	private JSONArray args;
 
 	@Override
