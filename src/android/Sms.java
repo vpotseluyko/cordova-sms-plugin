@@ -212,7 +212,7 @@ public class Sms extends CordovaPlugin {
 			public void onReceive(Context context, Intent intent) {
 				switch (getResultCode()) {
 				case Activity.RESULT_OK:
-					deliveryMap.put(intentFilterAction, "ok")
+					deliveryMap.put(intentFilterAction, "ok");
 					break;
 				case Activity.RESULT_CANCEL:
 					deliveryMap.put(intentFilterAction, "fail");
