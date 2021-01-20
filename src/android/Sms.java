@@ -40,7 +40,7 @@ public class Sms extends CordovaPlugin {
 	private CallbackContext callbackContext;
 
 
-	private HashMap<String, String> deliveryMap = new HashMap();
+	private Map<String, String> deliveryMap = new Map();
 	private JSONArray args;
 
 	@Override
