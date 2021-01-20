@@ -14,6 +14,12 @@ function convertPhoneToArray(phone) {
     return phone;
 }
 
+sms.getDeliveryMap = function (success, failure) {
+    exec(
+        success, failure,
+        'Sms', 'getDeliveryMap',
+    )
+}
 
 sms.send = function(phone, message, options, success, failure) {
     // parsing phone numbers
