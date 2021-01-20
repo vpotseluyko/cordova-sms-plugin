@@ -70,6 +70,7 @@ public class Sms extends CordovaPlugin {
 			return true;
 		} else if (action.equals(ACTION_GET_DELIVERY_MAP)) {
 			getDeliveryMap();
+			return true;
 		}
 		return false;
 	}
