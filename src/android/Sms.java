@@ -13,6 +13,7 @@ import android.os.Build;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
 import java.util.ArrayList;
+import java.util.Map;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -40,7 +41,7 @@ public class Sms extends CordovaPlugin {
 	private CallbackContext callbackContext;
 
 
-	private Map<String, String> deliveryMap = new Map();
+	private Hash deliveryMap;
 	private JSONArray args;
 
 	@Override
@@ -69,16 +70,7 @@ public class Sms extends CordovaPlugin {
 			requestPermission(REQUEST_PERMISSION_REQ_CODE);
 			return true;
 		} else if (action.equals(ACTION_GET_DELIVERY_MAP)) {
-
-			JSONObject sendToJs = new JSONObject();
-
-			for (Map.Entry entry : map.entrySet()) {
-				sendToJs.put(entry.getKey(), entry.getValue());
-			}
-
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
-
-			deliveryMap.clear();
 			return true;
 		}
 		return false;
