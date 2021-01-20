@@ -40,7 +40,7 @@ public class Sms extends CordovaPlugin {
 	private CallbackContext callbackContext;
 
 
-	private JSONObject deliveryMap;
+	private HashMap<String, String> deliveryMap = new HashMap();
 	private JSONArray args;
 
 	@Override
@@ -69,7 +69,16 @@ public class Sms extends CordovaPlugin {
 			requestPermission(REQUEST_PERMISSION_REQ_CODE);
 			return true;
 		} else if (action.equals(ACTION_GET_DELIVERY_MAP)) {
+
+			JSONObject sendToJs = new JSONObject();
+
+			for (Map.Entry entry : map.entrySet()) {
+				sendToJs.put(entry.getKey(), entry.getValue());
+			}
+
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
+
+			deliveryMap.clear();
 			return true;
 		}
 		return false;
