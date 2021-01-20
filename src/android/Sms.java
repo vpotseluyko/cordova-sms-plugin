@@ -214,7 +214,7 @@ public class Sms extends CordovaPlugin {
 				case Activity.RESULT_OK:
 					deliveryMap.put(intentFilterAction, "ok");
 					break;
-				case Activity.RESULT_CANCEL:
+				case Activity.RESULT_CANCELED:
 					deliveryMap.put(intentFilterAction, "fail");
 					break;
 				}
