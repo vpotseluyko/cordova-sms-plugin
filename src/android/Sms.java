@@ -155,6 +155,10 @@ public class Sms extends CordovaPlugin {
 		}
 		this.cordova.getActivity().startActivity(sendIntent);
 	}
+	
+	// randomize the intent filter action to avoid using the same receiver
+	String intentFilterAction = INTENT_FILTER_SMS_SENT + java.util.UUID.randomUUID().toString();
+
 
 	private void send(final CallbackContext callbackContext, String phoneNumber, String message) {
 		SmsManager manager = SmsManager.getDefault();
@@ -185,15 +189,13 @@ public class Sms extends CordovaPlugin {
 					if (anyError) {
 						callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR));
 					} else {
-						callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
+						callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, intentFilterAction));
 					}
 					cordova.getActivity().unregisterReceiver(this);
 				}
 			}
 		};
 
-		// randomize the intent filter action to avoid using the same receiver
-		String intentFilterAction = INTENT_FILTER_SMS_SENT + java.util.UUID.randomUUID().toString();
 		this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(intentFilterAction));
 
 		PendingIntent sentIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterAction), 0);
