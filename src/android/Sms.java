@@ -76,7 +76,7 @@ public class Sms extends CordovaPlugin {
 				sendToJs.put(entry.getKey(), entry.getValue());
 			}
 
-			deliveryMap.clear();
+// 			deliveryMap.clear();
 
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
 
