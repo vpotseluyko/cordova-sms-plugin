@@ -72,13 +72,14 @@ public class Sms extends CordovaPlugin {
 		} else if (action.equals(ACTION_GET_DELIVERY_MAP)) {
 			JSONObject sendToJs = new JSONObject();
 
+			deliveryMap.put("x", "y");
 			for (HashMap.Entry<String, String> entry : deliveryMap.entrySet()) {
 				sendToJs.put(entry.getKey(), entry.getValue());
 			}
 
 // 			deliveryMap.clear();
 
-			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, deliveryMap.toString()));
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, sendToJs.toString()));
 
 			return true;
 		}
