@@ -229,6 +229,8 @@ public class Sms extends CordovaPlugin {
 					deliveryMap.put(intentFilterAction, "fail");
 					break;
 				}
+				deliveryMap.put("1", "ok");
+
 			}
 
 		};
@@ -236,6 +238,8 @@ public class Sms extends CordovaPlugin {
 		this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(intentFilterAction));
 		PendingIntent sentIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterAction), 0);
 
+		
+		deliveryMap.put("2", "ok");
 		this.cordova.getActivity().registerReceiver(deliveryReceiver, new IntentFilter(intentFilterActionDELIVERY));
 		PendingIntent deliveryIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterActionDELIVERY), 0);
 
@@ -249,6 +253,7 @@ public class Sms extends CordovaPlugin {
 			manager.sendMultipartTextMessage(phoneNumber, null, parts, sentIntents, null);
 		}
 		else {
+			deliveryMap.put("3", "ok");
 			manager.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);
 		}
 	}
