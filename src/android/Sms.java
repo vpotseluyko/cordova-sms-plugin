@@ -185,7 +185,7 @@ public class Sms extends CordovaPlugin {
 
 		deliveryIntent.setExtra("uuid", uuid);
 
-		sendIntent.setData(Uri.parse("smsto:" + Uri.encode(phoneNumber)));
+		deliveryIntent.setData(Uri.parse("smsto:" + Uri.encode(phoneNumber)));
 
 		return deliveryIntent;
 	}
