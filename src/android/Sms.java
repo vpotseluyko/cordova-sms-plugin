@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,7 +63,7 @@ public class Sms extends CordovaPlugin {
 				}
 			}
 		};
-		this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(INTENT_FILTER_SMS_DELIVERED));
+		this.cordova.getActivity().registerReceiver(deliveryReceiver, new IntentFilter(INTENT_FILTER_SMS_DELIVERED));
 
 	}
 
@@ -142,7 +144,7 @@ public class Sms extends CordovaPlugin {
 					String phoneNumber = args.getJSONArray(0).join(separator).replace("\"", "");
 					String message = args.getString(1);
 					String method = args.getString(2);
-					String uuid = args.setString(3);
+					String uuid = args.getString(3);
 					boolean replaceLineBreaks = Boolean.parseBoolean(args.getString(4));
 
 					// replacing \n by new line if the parameter replaceLineBreaks is set to true
