@@ -183,7 +183,7 @@ public class Sms extends CordovaPlugin {
 	private Intent invokeDeliveryIntent(String uuid, String phoneNumber) {
 		Intent deliveryIntent = new Intent(INTENT_FILTER_SMS_DELIVERED);
 
-		deliveryIntent.setExtra("uuid", uuid);
+		deliveryIntent.putExtra("uuid", uuid);
 
 		deliveryIntent.setData(Uri.parse("smsto:" + Uri.encode(phoneNumber)));
 
