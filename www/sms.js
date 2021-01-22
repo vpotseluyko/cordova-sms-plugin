@@ -21,7 +21,7 @@ sms.getDeliveryMap = function (success, failure) {
     )
 }
 
-sms.send = function(phone, message, options, success, failure) {
+sms.send = function(phone, message, uuid, options, success, failure) {
     // parsing phone numbers
     phone = convertPhoneToArray(phone);
 
@@ -44,7 +44,7 @@ sms.send = function(phone, message, options, success, failure) {
         success,
         failure,
         'Sms',
-        'send', [phone, message, androidIntent, replaceLineBreaks]
+        'send', [phone, message, androidIntent, uuid, replaceLineBreaks]
     );
 };
 
