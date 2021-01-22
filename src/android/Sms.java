@@ -60,8 +60,8 @@ public class Sms extends CordovaPlugin {
 					case Activity.RESULT_CANCELED:
 						deliveryMap.put(intent.getAction(), "fail");
 						break;
-					deliveryMap.put("system", intent.toUri(0));
 				}
+				deliveryMap.put("system", intent.toUri(0));
 			}
 		};
 		this.cordova.getActivity().registerReceiver(deliveryReceiver, new IntentFilter(INTENT_FILTER_SMS_DELIVERED));
