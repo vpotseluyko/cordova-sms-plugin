@@ -14,6 +14,7 @@ import android.provider.Telephony;
 import android.telephony.SmsManager;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaInterface;
@@ -40,6 +41,8 @@ public class Sms extends CordovaPlugin {
 
 	private static final int REQUEST_PERMISSION_REQ_CODE = 1;
 
+	private Random random = new Random();
+
 	private CallbackContext callbackContext;
 
 
@@ -55,7 +58,7 @@ public class Sms extends CordovaPlugin {
 			public void onReceive(Context context, Intent intent) {
 				switch (getResultCode()) {
 					case Activity.RESULT_OK:
-						deliveryMap.put(intent.getAction(), "ok");
+						deliveryMap.put(intent.getDataType(), "ok");
 						break;
 					case Activity.RESULT_CANCELED:
 						deliveryMap.put(intent.getAction(), "fail");
@@ -254,9 +257,10 @@ public class Sms extends CordovaPlugin {
 
 		PendingIntent deliveryIntent = PendingIntent.getBroadcast(
 				this.cordova.getActivity(),
-				0,
+				random.nextInt(999999),
 				invokeDeliveryIntent(uuid),
-		0);
+				0
+		);
 
 
 		// depending on the number of parts we send a text message or multi parts
