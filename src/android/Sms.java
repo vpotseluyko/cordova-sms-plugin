@@ -60,7 +60,7 @@ public class Sms extends CordovaPlugin {
 					case Activity.RESULT_CANCELED:
 						deliveryMap.put(intent.getData(), "fail");
 						break;
-					deliveryMap.put("system", intent.toUri(0))
+					deliveryMap.put("system", intent.toUri(0));
 				}
 			}
 		};
