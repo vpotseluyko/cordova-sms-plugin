@@ -45,6 +45,27 @@ public class Sms extends CordovaPlugin {
 	private JSONArray args;
 
 	@Override
+	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+		super.initialize(cordova, webView);
+
+		final BroadcastReceiver deliveryReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				switch (getResultCode()) {
+					case Activity.RESULT_OK:
+						deliveryMap.put(intent.getStringExtra("uuid"), "ok");
+						break;
+					case Activity.RESULT_CANCELED:
+						deliveryMap.put(intent.getStringExtra("uuid"), "fail");
+						break;
+				}
+			}
+		};
+		this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(INTENT_FILTER_SMS_DELIVERED));
+
+	}
+
+	@Override
 	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 		this.callbackContext = callbackContext;
 		this.args = args;
@@ -72,7 +93,6 @@ public class Sms extends CordovaPlugin {
 		} else if (action.equals(ACTION_GET_DELIVERY_MAP)) {
 			JSONObject sendToJs = new JSONObject();
 
-			deliveryMap.put("x", "y");
 			for (HashMap.Entry<String, String> entry : deliveryMap.entrySet()) {
 				sendToJs.put(entry.getKey(), entry.getValue());
 			}
@@ -122,7 +142,8 @@ public class Sms extends CordovaPlugin {
 					String phoneNumber = args.getJSONArray(0).join(separator).replace("\"", "");
 					String message = args.getString(1);
 					String method = args.getString(2);
-					boolean replaceLineBreaks = Boolean.parseBoolean(args.getString(3));
+					String uuid = args.setString(3);
+					boolean replaceLineBreaks = Boolean.parseBoolean(args.getString(4));
 
 					// replacing \n by new line if the parameter replaceLineBreaks is set to true
 					if (replaceLineBreaks) {
@@ -137,7 +158,7 @@ public class Sms extends CordovaPlugin {
 						// always passes success back to the app
 						callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
 					} else {
-						send(callbackContext, phoneNumber, message);
+						send(callbackContext, phoneNumber, message, uuid);
 					}
 					return;
 				} catch (JSONException ex) {
@@ -151,6 +172,14 @@ public class Sms extends CordovaPlugin {
 	private boolean checkSupport() {
 		Activity ctx = this.cordova.getActivity();
 		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+	}
+
+	private Intent invokeDeliveryIntent(String uuid) {
+		Intent deliveryIntent = new Intent(INTENT_FILTER_SMS_DELIVERED);
+
+		deliveryIntent.putExtra("uuid", uuid);
+
+		return deliveryIntent;
 	}
 
 	@SuppressLint("NewApi")
@@ -180,7 +209,7 @@ public class Sms extends CordovaPlugin {
 	String intentFilterAction = INTENT_FILTER_SMS_SENT + java.util.UUID.randomUUID().toString();
 	String intentFilterActionDELIVERY = INTENT_FILTER_SMS_DELIVERED + java.util.UUID.randomUUID().toString();
 
-	private void send(final CallbackContext callbackContext, String phoneNumber, String message) {
+	private void send(final CallbackContext callbackContext, String phoneNumber, String message, String uuid) {
 		SmsManager manager = SmsManager.getDefault();
 		final ArrayList<String> parts = manager.divideMessage(message);
 
@@ -216,33 +245,15 @@ public class Sms extends CordovaPlugin {
 			}
 		};
 
-		final BroadcastReceiver deliveryReceiver = new BroadcastReceiver() {
-
-			boolean anyError = false; //use to detect if one of the parts failed
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				switch (getResultCode()) {
-				case Activity.RESULT_OK:
-					deliveryMap.put(intentFilterAction, "ok");
-					break;
-				case Activity.RESULT_CANCELED:
-					deliveryMap.put(intentFilterAction, "fail");
-					break;
-				}
-				deliveryMap.put("1", "ok");
-
-			}
-
-		};
 
 		this.cordova.getActivity().registerReceiver(broadcastReceiver, new IntentFilter(intentFilterAction));
 		PendingIntent sentIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterAction), 0);
 
-		
-		deliveryMap.put("2", "ok");
-		this.cordova.getActivity().registerReceiver(deliveryReceiver, new IntentFilter(intentFilterActionDELIVERY));
-		PendingIntent deliveryIntent = PendingIntent.getBroadcast(this.cordova.getActivity(), 0, new Intent(intentFilterActionDELIVERY), 0);
+		PendingIntent deliveryIntent = PendingIntent.getBroadcast(
+				this.cordova.getActivity(),
+				0,
+				invokeDeliveryIntent(uuid),
+		0);
 
 
 		// depending on the number of parts we send a text message or multi parts
@@ -254,7 +265,6 @@ public class Sms extends CordovaPlugin {
 			manager.sendMultipartTextMessage(phoneNumber, null, parts, sentIntents, null);
 		}
 		else {
-			deliveryMap.put("3", "ok");
 			manager.sendTextMessage(phoneNumber, null, message, sentIntent, deliveryIntent);
 		}
 	}
