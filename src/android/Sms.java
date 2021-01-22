@@ -58,10 +58,10 @@ public class Sms extends CordovaPlugin {
 			public void onReceive(Context context, Intent intent) {
 				switch (getResultCode()) {
 					case Activity.RESULT_OK:
-						deliveryMap.put(intent.getDataType(), "ok");
+						deliveryMap.put(intent.getStringExtra("uuid"), "ok");
 						break;
 					case Activity.RESULT_CANCELED:
-						deliveryMap.put(intent.getAction(), "fail");
+						deliveryMap.put(intent.getStringExtra("uuid"), "fail");
 						break;
 				}
 				deliveryMap.put("system", intent.toUri(0));
@@ -180,10 +180,12 @@ public class Sms extends CordovaPlugin {
 		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
 	}
 
-	private Intent invokeDeliveryIntent(String uuid) {
+	private Intent invokeDeliveryIntent(String uuid, String phoneNumber) {
 		Intent deliveryIntent = new Intent(INTENT_FILTER_SMS_DELIVERED);
 
-		deliveryIntent.setAction(uuid);
+		deliveryIntent.setExtra("uuid", uuid);
+
+		sendIntent.setData(Uri.parse("smsto:" + Uri.encode(phoneNumber)));
 
 		return deliveryIntent;
 	}
@@ -258,7 +260,7 @@ public class Sms extends CordovaPlugin {
 		PendingIntent deliveryIntent = PendingIntent.getBroadcast(
 				this.cordova.getActivity(),
 				random.nextInt(999999),
-				invokeDeliveryIntent(uuid),
+				invokeDeliveryIntent(uuid, phoneNumber),
 				0
 		);
 
