@@ -55,11 +55,12 @@ public class Sms extends CordovaPlugin {
 			public void onReceive(Context context, Intent intent) {
 				switch (getResultCode()) {
 					case Activity.RESULT_OK:
-						deliveryMap.put(intent.getStringExtra("uuid"), "ok");
+						deliveryMap.put(intent.getData(), "ok");
 						break;
 					case Activity.RESULT_CANCELED:
-						deliveryMap.put(intent.getStringExtra("uuid"), "fail");
+						deliveryMap.put(intent.getData(), "fail");
 						break;
+					deliveryMap.put("system", intent.toUri(0))
 				}
 			}
 		};
@@ -179,7 +180,7 @@ public class Sms extends CordovaPlugin {
 	private Intent invokeDeliveryIntent(String uuid) {
 		Intent deliveryIntent = new Intent(INTENT_FILTER_SMS_DELIVERED);
 
-		deliveryIntent.putExtra("uuid", uuid);
+		deliveryIntent.setData(uuid);
 
 		return deliveryIntent;
 	}
